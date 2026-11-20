@@ -46,3 +46,15 @@ Two log lines (logger `module`) go with them: `RKPARTY module ready` at startup,
 ## License
 
 GNU GPL v2 or (at your option) any later version, like mod-playerbots. See `LICENSE`.
+
+## Channels for every client language
+
+The server keys channels by name. A client whose language differs from the
+server's game data (a French client with the usual English data) joins
+General, Trade and LocalDefense under its own names at login, while the
+server and the Playerbots bots use the names of the server's data: the
+player would never see the bots talk. The module answers such a join with
+the channel of the server's name, as the server already does after a zone
+change (`RealmKeeper.Channels.ServerNames = 1`, the default). The channels
+then show the server's names in the client's chat.
+

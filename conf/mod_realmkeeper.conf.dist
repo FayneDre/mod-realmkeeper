@@ -31,3 +31,17 @@ RealmKeeper.Party.GearQuality = 3
 #        Default:     0.35
 
 RealmKeeper.Party.GearLoweringChance = 0.35
+
+#
+#    RealmKeeper.Channels.ServerNames
+#        Description: A client in another language than the server's game
+#                     data (French client, English data) joins General,
+#                     Trade and LocalDefense under its own names: the
+#                     channels the bots and the server use are the ones of
+#                     the server's names. When enabled, such a join is
+#                     answered with the server's channel, as the server does
+#                     itself after a zone change.
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
+
+RealmKeeper.Channels.ServerNames = 1

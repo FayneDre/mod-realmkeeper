@@ -5,8 +5,10 @@
  */
 
 void AddSC_realmkeeper();
+void AddSC_realmkeeper_channels();
 
 void Addmod_realmkeeperScripts()
 {
     AddSC_realmkeeper();
+    AddSC_realmkeeper_channels();
 }
