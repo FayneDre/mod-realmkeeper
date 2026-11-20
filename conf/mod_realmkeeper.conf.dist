@@ -1,0 +1,14 @@
+[worldserver]
+
+########################################
+# mod-realmkeeper configuration
+########################################
+#
+#    RealmKeeper.Party.Enable
+#        Description: Console commands that form a Playerbots party for a
+#                     player in the world (.rk party add|remove|list), used
+#                     by the RealmKeeper launcher.
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
+
+RealmKeeper.Party.Enable = 1
