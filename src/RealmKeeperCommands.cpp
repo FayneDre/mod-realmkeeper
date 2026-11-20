@@ -15,6 +15,7 @@
 #include "Chat.h"
 #include "ChatCommand.h"
 #include "Config.h"
+#include "Log.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Player.h"
@@ -109,7 +110,11 @@ public:
 class realmkeeper_worldscript : public WorldScript
 {
 public:
-    realmkeeper_worldscript() : WorldScript("realmkeeper_worldscript", {WORLDHOOK_ON_UPDATE}) { }
+    realmkeeper_worldscript()
+        : WorldScript("realmkeeper_worldscript", {WORLDHOOK_ON_STARTUP, WORLDHOOK_ON_UPDATE}) { }
+
+    // The launcher's smoke test looks for this line: the module is loaded.
+    void OnStartup() override { LOG_INFO("module", "RKPARTY module ready"); }
 
     void OnUpdate(uint32 diff) override { RealmKeeperParty::Update(diff); }
 };

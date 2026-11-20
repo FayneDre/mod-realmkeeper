@@ -35,8 +35,8 @@ RKPARTY REMOVED <name>
 RKPARTY END <count>
 ```
 
-and the log line `RKPARTY READY <bot> <level> <spec name>` (logger `module`) says
-when a bot is set up.
+Two log lines (logger `module`) go with them: `RKPARTY module ready` at startup, and
+`RKPARTY READY <bot> <level> <spec name>` once a bot is set up.
 
 ## Configuration
 
