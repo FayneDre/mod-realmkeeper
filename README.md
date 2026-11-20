@@ -17,9 +17,10 @@ without the player typing anything:
 | `.rk party list <player>` | lists them |
 
 `<class>` is one of `warrior paladin hunter rogue priest dk shaman mage warlock druid`
-(the names of `.playerbots bot addclass`). At the player's own level, the gear is
-capped by the player's gear like `addclass` does; at another level it follows the
-random bots' gear limits.
+(the names of `.playerbots bot addclass`). The gear is random items for the
+bot's level and spec, up to `RealmKeeper.Party.GearQuality` (blue by default), each
+slot one quality lower with the chance `RealmKeeper.Party.GearLoweringChance`
+(0.35: a mix of blue and green). The player's own gear does not limit it.
 
 A party holds 5 characters: the player and up to 4 bots. Dungeon finder and
 battleground groups are refused.

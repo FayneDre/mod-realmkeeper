@@ -6,6 +6,7 @@
 #include "RealmKeeperParty.h"
 
 #include "CharacterCache.h"
+#include "Config.h"
 #include "Containers.h"
 #include "GameTime.h"
 #include "Group.h"
@@ -25,6 +26,7 @@
 #include "Playerbots.h"
 #include "RandomPlayerbotMgr.h"
 
+#include <algorithm>
 #include <set>
 #include <unordered_map>
 
@@ -38,8 +40,6 @@ namespace RealmKeeperParty
             ObjectGuid master;
             uint32 level = 0;
             uint32 specNo = 0;
-            /// 0: Playerbots' random gear limits; otherwise the master's own.
-            uint32 gearScoreLimit = 0;
             uint64 queuedAt = 0;
             /// The player sent the party away before this bot logged in.
             bool cancelled = false;
@@ -99,17 +99,42 @@ namespace RealmKeeperParty
                     bot->DestroyItem(INVENTORY_SLOT_BAG_0, slot, true);
         }
 
+        /// Best item quality a party bot aims for (2 uncommon .. 4 epic).
+        uint32 GearQuality()
+        {
+            return std::clamp<uint32>(sConfigMgr->GetOption<uint32>("RealmKeeper.Party.GearQuality", ITEM_QUALITY_RARE),
+                                      ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+        }
+
+        /// Chance for each slot to get one quality lower: the mix of blue and
+        /// green items of a party bot.
+        float GearLoweringChance()
+        {
+            return std::clamp(sConfigMgr->GetOption<float>("RealmKeeper.Party.GearLoweringChance", 0.35f), 0.0f, 1.0f);
+        }
+
+        /// Equipment for the bot's level and spec, random items of the
+        /// party's quality (no gear score cap: the player's own gear does not
+        /// limit the party). Playerbots reads the lowering chance from its
+        /// config: it is set for this one call, on the world thread.
+        void InitPartyEquipment(PlayerbotFactory& factory)
+        {
+            float const previous = sPlayerbotAIConfig.RandomGearLoweringChance;
+            sPlayerbotAIConfig.RandomGearLoweringChance = GearLoweringChance();
+            factory.InitEquipment(false, true);
+            sPlayerbotAIConfig.RandomGearLoweringChance = previous;
+        }
+
         /// Level, premade spec, then gear for that spec: the order the
         /// Playerbots `init` and `talents spec` commands use.
         void SetUp(Player* bot, Pending const& wanted)
         {
-            PlayerbotFactory factory = wanted.gearScoreLimit
-                ? PlayerbotFactory(bot, wanted.level, ITEM_QUALITY_LEGENDARY, wanted.gearScoreLimit)
-                : PlayerbotFactory(bot, wanted.level);
+            // A non-zero quality keeps the random bots' limits out.
+            PlayerbotFactory factory(bot, wanted.level, GearQuality(), 0);
             StripEquipment(bot);
             factory.Randomize(false);
             PlayerbotFactory::InitTalentsBySpecNo(bot, static_cast<int>(wanted.specNo), true);
-            factory.InitEquipment(false, true);
+            InitPartyEquipment(factory);
             factory.InitGlyphs(false);
             if (bot->GetLevel() >= sPlayerbotAIConfig.MinEnchantingBotLevel)
                 factory.ApplyEnchantAndGemsNew();
@@ -172,14 +197,6 @@ namespace RealmKeeperParty
         wanted.level = level;
         wanted.specNo = specNo;
         wanted.queuedAt = Now();
-        // At the player's level, gear like Playerbots' addclass does: capped
-        // by the player's own; at another level the player's gear says nothing.
-        if (level == master->GetLevel())
-        {
-            uint32 const score = static_cast<uint32>(PlayerbotAI::GetMixedGearScore(master, true, false, 12) *
-                                                     sPlayerbotAIConfig.AutoInitEquipLevelLimitRatio);
-            wanted.gearScoreLimit = score ? score : 1;
-        }
         pending[guid] = wanted;
         mgr->AddPlayerBot(guid, master->GetSession()->GetAccountId());
 

@@ -12,3 +12,22 @@
 #                     0 - (Disabled)
 
 RealmKeeper.Party.Enable = 1
+
+#
+#    RealmKeeper.Party.GearQuality
+#        Description: Best item quality of a party bot's equipment, random
+#                     items for its level and spec.
+#        Default:     3 - (Rare, blue)
+#                     2 - (Uncommon, green)
+#                     4 - (Epic, purple)
+
+RealmKeeper.Party.GearQuality = 3
+
+#
+#    RealmKeeper.Party.GearLoweringChance
+#        Description: Chance (0 to 1) for each equipment slot of a party bot
+#                     to get one quality lower: with GearQuality 3, a mix of
+#                     blue and green items.
+#        Default:     0.35
+
+RealmKeeper.Party.GearLoweringChance = 0.35
